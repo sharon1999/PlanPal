@@ -94,7 +94,7 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ onTranscript, onSpea
               ? 'bg-red-500/30 text-red-300 shadow-lg shadow-red-500/25'
               : isSpeaking
               ? 'bg-gray-500/30 text-gray-400 cursor-not-allowed'
-              : 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white hover:from-purple-500/40 hover:to-pink-500/40 shadow-lg shadow-purple-500/25'
+              : 'bg-gradient-to-r from-blue-500/30 to-cyan-500/30 text-white hover:from-blue-500/40 hover:to-cyan-500/40 shadow-lg shadow-blue-500/25'
           }`}
         >
           {voiceState.isListening ? (
