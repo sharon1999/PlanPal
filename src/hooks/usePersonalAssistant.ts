@@ -1,7 +1,9 @@
 import { useState, useCallback } from 'react';
 import { Message } from '../types';
+import { callGeminiAPI } from '../services/geminiService';
 
-const generateResponse = (userMessage: string): string => {
+// Fallback responses for when Gemini API fails
+const getFallbackResponse = (userMessage: string): string => {
   const message = userMessage.toLowerCase();
   
   if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
@@ -48,7 +50,7 @@ export const usePersonalAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hello! I'm your personal assistant. You can speak to me using the microphone or type your messages. How can I help you today?",
+      text: "Hello! I'm your personal assistant powered by Gemini AI. You can speak to me using the microphone or type your messages. How can I help you today?",
       sender: 'assistant',
       timestamp: new Date()
     }
@@ -66,9 +68,10 @@ export const usePersonalAssistant = () => {
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
 
-    // Simulate thinking time
-    setTimeout(() => {
-      const response = generateResponse(text);
+    try {
+      // Call Gemini API
+      const response = await callGeminiAPI(text);
+      
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: response,
@@ -77,8 +80,22 @@ export const usePersonalAssistant = () => {
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Error getting response from Gemini:', error);
+      
+      // Use fallback response if Gemini API fails
+      const fallbackResponse = getFallbackResponse(text);
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: fallbackResponse,
+        sender: 'assistant',
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1000 + Math.random() * 2000); // Random delay between 1-3 seconds
+    }
   }, []);
 
   return {
