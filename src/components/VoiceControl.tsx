@@ -14,11 +14,11 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ onTranscript, onSpea
     error: null
   });
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
       
       recognitionRef.current.continuous = false;
@@ -29,7 +29,7 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ onTranscript, onSpea
         setVoiceState(prev => ({ ...prev, isListening: true, error: null }));
       };
 
-      recognitionRef.current.onresult = (event) => {
+      recognitionRef.current.onresult = (event: { results: { transcript: any; }[][]; }) => {
         const transcript = event.results[0][0].transcript;
         onTranscript(transcript);
       };
@@ -38,7 +38,7 @@ export const VoiceControl: React.FC<VoiceControlProps> = ({ onTranscript, onSpea
         setVoiceState(prev => ({ ...prev, isListening: false }));
       };
 
-      recognitionRef.current.onerror = (event) => {
+      recognitionRef.current.onerror = () => {
         setVoiceState(prev => ({ 
           ...prev, 
           isListening: false, 
