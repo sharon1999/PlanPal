@@ -77,4 +77,13 @@ export const callGeminiAPI = async (userInput: string): Promise<string> => {
     console.error('Error calling Gemini API:', error);
     throw error;
   }
+};
+
+// Send reminders context to Gemini
+export const sendRemindersContextToGemini = async (reminders: import('../types').Reminder[]): Promise<void> => {
+  const remindersText = reminders.map(r => `- [${r.completed ? 'x' : ' '}] ${r.title} (${r.date})`).join('\n');
+  const contextPrompt = `Here are the user's reminders:\n${remindersText}`;
+  // Optionally, you could call Gemini with this contextPrompt to keep it in context for future chats
+  // For now, this is a placeholder for future integration
+  // await callGeminiAPI(contextPrompt);
 }; 

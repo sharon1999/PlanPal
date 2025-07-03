@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Message } from '../types';
+import { Message, Reminder } from '../types';
 import { callGeminiAPI } from '../services/geminiService';
 
 // Fallback responses for when Gemini API fails - focused on planning and reminders
@@ -110,5 +110,42 @@ export const usePersonalAssistant = () => {
     messages,
     isTyping,
     sendMessage
+  };
+};
+
+// Reminders state and logic
+export const useReminders = () => {
+  const [reminders, setReminders] = useState<Reminder[]>([]);
+
+  const addReminder = (title: string, date: string) => {
+    const newReminder: Reminder = {
+      id: Date.now().toString(),
+      title,
+      date,
+      completed: false,
+    };
+    setReminders(prev => [...prev, newReminder]);
+    return newReminder;
+  };
+
+  const completeReminder = (id: string) => {
+    setReminders(prev => prev.map(r => r.id === id ? { ...r, completed: true } : r));
+  };
+
+  const uncompleteReminder = (id: string) => {
+    setReminders(prev => prev.map(r => r.id === id ? { ...r, completed: false } : r));
+  };
+
+  const removeReminder = (id: string) => {
+    setReminders(prev => prev.filter(r => r.id !== id));
+  };
+
+  return {
+    reminders,
+    addReminder,
+    completeReminder,
+    uncompleteReminder,
+    removeReminder,
+    setReminders, // for syncing with backend/LLM
   };
 };
